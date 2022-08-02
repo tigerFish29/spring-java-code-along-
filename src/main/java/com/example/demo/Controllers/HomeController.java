@@ -1,8 +1,6 @@
 package com.example.demo.Controllers;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,10 +11,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.Services.PersonService;
+
 @RestController
 public class HomeController {
 
-    private List<HomeController> people = new ArrayList<>();
+    private PersonService service;
+
+    public HomeController(PersonService service) {
+        super();
+        this.service = service;
+    }
 
     @GetMapping("/test")
     public String test() {
@@ -25,30 +30,25 @@ public class HomeController {
 
     // create a person 
     @PostMapping("/create")
-    public boolean addPerson(@RequestBody HomeController person) {
-        return this.people.add(person);
+    public HomeController addPerson(@RequestBody HomeController person) {
+        return this.service.addPerson(person);
     }
 
     // Read 
     @GetMapping("/getAll")
-    public List<HomeController> getAll() {
-        return this.people;
+    public List<HomeController> getAllPeople() {
+        return this.service.getAllPeople();
     }
 
     // updating the person 
     @PutMapping("/update")
     public HomeController updatePerson(@PathParam("id") int id, @RequestBody HomeController person) {
-        // removing existing person with matching id 
-        this.people.remove(id);
-        // add new person in its place 
-        this.people.add(id, person);
-        // return updated person 
-        return this.people.get(id);
+        return this.service.updatePerson(id, person);
     }
     
     // deleting people 
     @DeleteMapping("/delete/{id}")
     public HomeController removePerson(@PathVariable int id) {
-        return this.people.remove(id);
+        return this.service.removePerson(id);
     }
 }
